@@ -5823,6 +5823,11 @@ store2@^2.7.1:
   resolved "https://registry.yarnpkg.com/store2/-/store2-2.10.0.tgz#46b82bb91878daf1b0d56dec2f1d41e54d5103cf"
   integrity sha512-tWEpK0snS2RPUq1i3R6OahfJNjWCQYNxq0+by1amCSuw0mXtymJpzmZIeYpA1UAa+7B0grCpNYIbDcd7AgTbFg==
 
+storybook-rtl-addon@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/storybook-rtl-addon/-/storybook-rtl-addon-0.1.2.tgz#4b1d860a6980bc5d20ec0624d41aac1dec4ffb7a"
+  integrity sha512-HUs3BMskVQlz3Pdx87/xGSGH1pUI3TR35TahCScgtbRIS3Vc0w+SpGZn+ok3T6BPBzia0DI6hz9Z5BbtgpEZ2w==
+
 string-argv@^0.3.0:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/string-argv/-/string-argv-0.3.1.tgz#95e2fbec0427ae19184935f816d74aaa4c5c19da"

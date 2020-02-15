@@ -1,20 +1,31 @@
 import React from 'react';
 import addons from '@storybook/addons';
 import { LOCALE_EVENT_NAME } from './constants';
+import { LocaleData } from './typings';
 
 /**
- * Returns the current state of storybook's locale
+ * Returns locale data as object
  */
-export function useLocale(): string {
-  const [locale, setLocale] = React.useState<string>('en');
+export function useLocaleData(def = 'en') {
+  const [localeData, setLocaleData] = React.useState<LocaleData>({
+    locale: def
+  });
 
   React.useEffect(() => {
     const chan = addons.getChannel();
-    chan.on(LOCALE_EVENT_NAME, setLocale);
-    return () => chan.off(LOCALE_EVENT_NAME, setLocale);
+    chan.on(LOCALE_EVENT_NAME, setLocaleData);
+    return () => chan.off(LOCALE_EVENT_NAME, setLocaleData);
   }, []);
 
-  return locale.toLowerCase();
+  return localeData;
+}
+
+/**
+ * Returns locale code
+ */
+export function useLocale(def = 'en') {
+  const localData = useLocaleData(def);
+  return localData.locale;
 }
 
 export * from './constants';

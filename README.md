@@ -36,20 +36,60 @@ addParameters({
 });
 ```
 
+configuration can also take object of data:
+
+```js
+import { addParameters } from '@storybook/react';
+
+addParameters({
+  locales: {
+    en: { dir: 'ltr', name: 'English', text: 'English' },
+    fa: { dir: 'rtl', name: 'Persian', text: 'فارسی' }
+  }
+});
+```
+
+To apply ltr-rtl direction to the story, the [storybook-rtl-addon](https://www.npmjs.com/package/storybook-rtl-addon) must be installed. and `dir` prop must be supplied as it shown above.
+
 ## Story integration
 
-Use hook to get current locale:
+This addon come with two type of hooks:
+
+- useLocale
+- useLocaleData
+
+useLocale will return locale code:
 
 ```js
 import { useLocale } from 'storybook-addon-locale';
 
-const locale = useLocale();
-return (
-  <div>
-    {locale === 'en' && <div>English</div>}
-    {locale === 'fr' && <div>French</div>}
-  </div>
-);
+function MyComponent() {
+  const locale = useLocale();
+
+  return (
+    <div>
+      {locale === 'en' && <div>English</div>}
+      {locale === 'fr' && <div>French</div>}
+    </div>
+  );
+}
+```
+
+useLocaleData will return locale data as an object:
+
+```js
+import { useLocaleData } from 'storybook-addon-locale';
+
+function MyComponent() {
+  const localeData = useLocaleData();
+
+  return (
+    <div>
+      {localeData && localeData.locale === 'en' && <div>{localeData.text}</div>}
+      {localeData && localeData.locale === 'fa' && <div>{localeData.text}</div>}
+    </div>
+  );
+}
 ```
 
 You can also listen for the locale change event as follow:
@@ -62,9 +102,9 @@ import { LOCALE_EVENT_NAME } from 'storybook-addon-locale';
 const channel = addons.getChannel();
 
 // create a component that listens for the event change
-function MyComponent({ children }) {
+function MyComponent() {
   // this example uses hook but you can also use class component as well
-  const [locale, setLocale] = useState('en');
+  const [localeData, setLocale] = useState();
 
   useEffect(() => {
     // listen to change
@@ -74,8 +114,8 @@ function MyComponent({ children }) {
 
   return (
     <div>
-      {locale === 'en' && <div>English</div>}
-      {locale === 'fr' && <div>French</div>}
+      {localeData && localeData.locale === 'en' && <div>{localeData.text}</div>}
+      {localeData && localeData.locale === 'fa' && <div>{localeData.text}</div>}
     </div>
   );
 }

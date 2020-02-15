@@ -5,17 +5,18 @@ import { LOCALE_EVENT_NAME, ADDON_ID, PARAM_KEY } from './constants';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Language } from './icons';
+import { LocaleData } from './typings';
+import { Direction_SET_MODE_EVENT_NAME } from 'storybook-rtl-addon';
 
 interface LocaleToolProps {
   api: API;
 }
 
 export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
-  const { api } = props;
   const [locale, setLocale] = useAddonState<string>(ADDON_ID, 'en');
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [locales, setLocales] = React.useState<string[]>([]);
-
+  const [locales, setLocales] = React.useState<LocaleData[]>([]);
+  const { api } = props;
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
@@ -26,33 +27,60 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
 
   React.useEffect(() => {
     handleClose();
-    props.api.getChannel().emit(LOCALE_EVENT_NAME, locale);
-  }, [locale, props.api]);
+    const localeInfo = locales.find(x => x.locale === locale);
 
-  const handleLocales = () => {
+    if (!localeInfo) return;
+
+    const chan = props.api.getChannel();
+
+    chan.emit(LOCALE_EVENT_NAME, localeInfo);
+
+    if (localeInfo.dir) {
+      chan.emit(Direction_SET_MODE_EVENT_NAME, localeInfo.dir);
+    }
+  }, [locale, locales, props.api]);
+
+  const handleLocales = React.useCallback(() => {
     const data = api.getCurrentStoryData();
 
-    if (!('parameters' in data)) {
+    if (!data || !('parameters' in data)) {
       return;
     }
 
     const { parameters } = data;
 
-    setLocales(parameters[PARAM_KEY]);
-  };
+    const localeParam = parameters[PARAM_KEY];
+
+    if (Array.isArray(localeParam))
+      setLocales(
+        localeParam.map(l => {
+          return { locale: l };
+        })
+      );
+    else {
+      setLocales(
+        Object.keys(localeParam).map(loc => {
+          return {
+            locale: loc,
+            ...localeParam[loc]
+          };
+        })
+      );
+    }
+  }, [api]);
 
   React.useEffect(() => {
-    const channel = props.api.getChannel();
-    channel.on('storyChanged', handleLocales);
+    const channel = api.getChannel();
     channel.on('storiesConfigured', handleLocales);
     channel.on('docsRendered', handleLocales);
-
+    channel.on('storyRender', handleLocales);
+    handleLocales();
     return () => {
-      channel.removeListener('storyChanged', handleLocales);
       channel.removeListener('storiesConfigured', handleLocales);
       channel.removeListener('docsRendered', handleLocales);
+      channel.removeListener('storyRender', handleLocales);
     };
-  });
+  }, [api, handleLocales]);
 
   return (
     <>
@@ -75,10 +103,14 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {locales.map(l => {
+        {locales.map(localData => {
           return (
-            <MenuItem key={l} onClick={() => setLocale(l)}>
-              {l.toUpperCase()}
+            <MenuItem
+              key={localData.locale}
+              selected={localData.locale === locale}
+              onClick={() => setLocale(localData.locale)}
+            >
+              {localData.name || localData.locale.toUpperCase()}
             </MenuItem>
           );
         })}

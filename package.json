@@ -28,7 +28,8 @@
     "@storybook/core-events": ">= 5.x"
   },
   "dependencies": {
-    "@material-ui/core": "^4.9.2"
+    "@material-ui/core": "^4.9.2",
+    "storybook-rtl-addon": "^0.1.2"
   },
   "devDependencies": {
     "@storybook/addons": "5.3.8",
