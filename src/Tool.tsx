@@ -13,10 +13,11 @@ interface LocaleToolProps {
 }
 
 export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
-  const [locale, setLocale] = useAddonState<string>(ADDON_ID, 'en');
+  const [locale, setLocale] = useAddonState<string|undefined>(ADDON_ID,undefined);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [locales, setLocales] = React.useState<LocaleData[]>([]);
   const { api } = props;
+
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
@@ -40,6 +41,15 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
     }
   }, [locale, locales, props.api]);
 
+  React.useEffect(() => {
+    if (!locales || locale) return;
+
+    const defaultLocale = locales.find(x => x.default === true);
+    if(defaultLocale)
+    setLocale(defaultLocale?.locale);
+
+  }, [locale, locales, setLocale]);
+
   const handleLocales = React.useCallback(() => {
     const data = api.getCurrentStoryData();
 
@@ -53,19 +63,24 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
 
     if (Array.isArray(localeParam))
       setLocales(
-        localeParam.map(l => {
-          return { locale: l };
+        localeParam.map((l, i) => {
+          return { locale: l, default: i === 0 };
         })
       );
     else {
-      setLocales(
-        Object.keys(localeParam).map(loc => {
-          return {
-            locale: loc,
-            ...localeParam[loc]
-          };
-        })
-      );
+      const localArr =    Object.keys(localeParam).map(loc => {
+        return {
+          locale: loc,
+          ...localeParam[loc]
+        };
+      });
+      if(!localArr)return;
+      if(!localArr.find(x=>x.default))
+       {
+          localArr[0].default=true;
+        }
+
+      setLocales(localArr);
     }
   }, [api]);
 
@@ -74,13 +89,35 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
     channel.on('storiesConfigured', handleLocales);
     channel.on('docsRendered', handleLocales);
     channel.on('storyRender', handleLocales);
-    handleLocales();
     return () => {
       channel.removeListener('storiesConfigured', handleLocales);
       channel.removeListener('docsRendered', handleLocales);
       channel.removeListener('storyRender', handleLocales);
     };
   }, [api, handleLocales]);
+
+  const resetLocale = React.useCallback(() => {
+    if(!locales){
+      setLocale(undefined);
+      return;
+    }
+
+    const def =locales.find(x=>x.default) ;
+    if(!def) {
+      setLocale(undefined);
+      return
+    }
+
+    setLocale(def.locale);
+  }, [locales, setLocale]);
+
+  React.useEffect(() => {
+    const channel = api.getChannel();
+    channel.on('storyChanged', resetLocale);
+    return () => {
+      channel.removeListener('storyChanged', resetLocale);
+    };
+  }, [api, resetLocale]);
 
   return (
     <>
@@ -92,9 +129,11 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
       >
         <div>
           <Language />
+          {locale&&
           <small style={{ position: 'relative', bottom: 4 }}>
             {locale.toLocaleUpperCase()}
           </small>
+          }
         </div>
       </IconButton>
       <Menu

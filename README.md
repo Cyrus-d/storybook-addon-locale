@@ -43,7 +43,7 @@ import { addParameters } from '@storybook/react';
 
 addParameters({
   locales: {
-    en: { dir: 'ltr', name: 'English', text: 'English' },
+    en: { dir: 'ltr', name: 'English', default: true, text: 'English' },
     fa: { dir: 'rtl', name: 'Persian', text: 'فارسی' }
   }
 });
