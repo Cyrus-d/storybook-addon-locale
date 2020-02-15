@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-locale",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A storybook addons that lets you select locale from the list",
   "main": "dist/index.js",
   "source": "index.ts",
