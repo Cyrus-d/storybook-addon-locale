@@ -1,19 +1,29 @@
-import React from 'react';
-import addons from '@storybook/addons';
+import React, { useState } from 'react';
+import addons, { StoryContext } from '@storybook/addons';
 import { LOCALE_EVENT_NAME } from './constants';
 import { LocaleData } from './typings';
+import { getDefault } from './utils';
+import { getDefaultLocaleInfo } from './utils';
+import deepEqual from 'deep-equal';
 
 /**
  * Returns locale data as object
  */
-export function useLocaleData() {
-  const [localeData, setLocaleData] = React.useState<LocaleData>();
+export function useLocaleData(context?: StoryContext) {
+  const [localeData, setLocaleData] = React.useState<LocaleData | undefined>(
+    getDefaultLocaleInfo(context)
+  );
 
   React.useEffect(() => {
     const chan = addons.getChannel();
-    chan.on(LOCALE_EVENT_NAME, setLocaleData);
-    return () => chan.off(LOCALE_EVENT_NAME, setLocaleData);
-  }, []);
+
+    const handleEvent = (data: LocaleData) => {
+      if (!localeData || !deepEqual(data, localeData)) setLocaleData(data);
+    };
+
+    chan.on(LOCALE_EVENT_NAME, handleEvent);
+    return () => chan.off(LOCALE_EVENT_NAME, handleEvent);
+  }, [localeData]);
 
   return localeData;
 }
@@ -21,9 +31,19 @@ export function useLocaleData() {
 /**
  * Returns locale code
  */
-export function useLocale() {
-  const localData = useLocaleData();
-  return localData && localData.locale;
+export function useLocale(context?: StoryContext) {
+  const [locale, setLocale] = useState(getDefault(context));
+  React.useEffect(() => {
+    const chan = addons.getChannel();
+
+    const handleEvent = (data: LocaleData) => setLocale(data.locale);
+
+    chan.on(LOCALE_EVENT_NAME, handleEvent);
+
+    return () => chan.off(LOCALE_EVENT_NAME, handleEvent);
+  }, []);
+
+  return locale;
 }
 
 export * from './constants';

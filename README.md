@@ -26,30 +26,105 @@ import 'storybook-addon-locale/register';
 
 ## Configuration
 
-Set locales in your `config.js` file:
+Following options are available:
+
+- locales
+- defaultLocale
+- enableLocaleLockButton
+
+Set addon options in your `config.js` file.
+
+### locales
 
 ```js
 import { addParameters } from '@storybook/react';
 
 addParameters({
-  locales: ['en', 'fr']
+  locales: ['en', 'fr'],
+  defaultLocale: 'en'
 });
 ```
 
-configuration can also take object of data:
+This options can also take object of data:
 
 ```js
 import { addParameters } from '@storybook/react';
 
 addParameters({
   locales: {
-    en: { dir: 'ltr', name: 'English', default: true, text: 'English' },
+    en: { dir: 'ltr', name: 'English', text: 'English' },
     fa: { dir: 'rtl', name: 'Persian', text: 'فارسی' }
   }
 });
 ```
 
-To apply ltr-rtl direction to the story, the [storybook-rtl-addon](https://www.npmjs.com/package/storybook-rtl-addon) must be installed. and `dir` prop must be supplied as it shown above.
+> To apply ltr-rtl direction to the story, the [storybook-rtl-addon](https://www.npmjs.com/package/storybook-rtl-addon) must be installed. and `dir` prop must be provided as it shown above.
+
+Or inside story file:
+
+```js
+export default {
+  component: MyComponent,
+  parameters: { locales: ['en', 'fr'] },
+  title: 'locale test'
+};
+```
+
+Or for specific story:
+
+```js
+MyComponentStory.story = {
+  parameters: {
+    locales: ['en', 'fr']
+  }
+};
+```
+
+> To disable locale for specific stroy set `locale` to false as follow:
+
+```js
+MyComponentStory.story = {
+  parameters: {
+    locales: false
+  }
+};
+```
+
+### defaultLocale
+
+To set default local storybook:
+
+```js
+import { addParameters } from '@storybook/react';
+
+addParameters({
+  locales: ['en', 'fr'],
+  defaultLocale: 'en'
+});
+```
+
+Or inside story file:
+
+```js
+export default {
+  component: MyComponent,
+  parameters: { defaultLocale: 'en' },
+  title: 'locale test'
+};
+```
+
+### enableLocaleLockButton
+
+To show a button in toolbar for locking selected locale for entire stories :
+
+```js
+import { addParameters } from '@storybook/react';
+
+addParameters({
+  locales: ['en', 'fr'],
+  enableLocaleLockButton: true
+});
+```
 
 ## Story integration
 
@@ -63,8 +138,8 @@ useLocale will return locale code:
 ```js
 import { useLocale } from 'storybook-addon-locale';
 
-function MyComponent() {
-  const locale = useLocale();
+function MyComponent(context) {
+  const locale = useLocale(context);
 
   return (
     <div>
@@ -80,8 +155,8 @@ useLocaleData will return locale data as an object:
 ```js
 import { useLocaleData } from 'storybook-addon-locale';
 
-function MyComponent() {
-  const localeData = useLocaleData();
+function MyComponent(context) {
+  const localeData = useLocaleData(context);
 
   return (
     <div>

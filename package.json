@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-locale",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A storybook addons that lets you select locale from the list",
   "main": "dist/index.js",
   "source": "index.ts",
@@ -29,6 +29,9 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.9.2",
+    "@types/deep-equal": "^1.0.1",
+    "deep-equal": "^2.0.1",
+    "react-use": "^13.26.0",
     "storybook-rtl-addon": "^0.1.2"
   },
   "devDependencies": {
@@ -49,7 +52,7 @@
     "husky": "3.1.0",
     "jest": "24.9.0",
     "lint-staged": "9.5.0",
-    "prettier": "1.18.2",
+    "prettier": "^1.19.1",
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "typescript": "3.7.5"
