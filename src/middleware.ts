@@ -7,7 +7,7 @@ import { getDefault } from './utils';
 import { StoryContext } from '@storybook/addons';
 
 export const emitEvents = (api: API, locales: LocaleData[], loc: string) => {
-  const localeInfo = locales.find(x => x.locale === loc);
+  const localeInfo = locales.find((x) => x.locale === loc);
 
   if (!localeInfo) return;
   const chan = api.getChannel();
@@ -37,7 +37,7 @@ export const defaultLocaleMiddleware = (store: any) => (
         type: 'setLocale',
         locale: getDefault(
           (state.api.getCurrentStoryData() as unknown) as StoryContext
-        )
+        ),
       });
   }
 

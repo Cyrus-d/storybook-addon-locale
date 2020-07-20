@@ -1,5 +1,6 @@
 import '../register';
 import { addParameters } from '@storybook/react'; // or any other type of storybook
+import 'storybook-rtl-addon/register';
 
 addParameters({
   locales: {

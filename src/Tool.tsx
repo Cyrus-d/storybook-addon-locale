@@ -5,7 +5,7 @@ import { API } from '@storybook/api';
 import {
   PARAM_LOCK_BUTTON_ENABLED,
   LOCALE_EVENT_SET_LOCAL,
-  SET_LOCALE_TO_QUERYSTRING,
+  SET_KNOB,
 } from './constants';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -17,6 +17,7 @@ import { reducer } from './reducer';
 import { Action } from './actions';
 import { defaultLocaleMiddleware } from './middleware';
 import { ReducerState } from './typings';
+import { CHANGE } from '@storybook/addon-knobs/dist/shared';
 
 type ReducerType = (
   r: typeof reducer,
@@ -54,21 +55,18 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = (props) => {
     setAnchorEl(null);
   }, []);
 
-  const handleClick = (event: any) => {
+  const handleClick = useCallback((event: any) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
   const handleLocaleChange = useCallback(
     (loc: string) => {
       handleClose();
 
       dispatch({ type: 'setLocale', locale: loc });
-      if (
-        api.getParameters(api.getCurrentStoryData().id)[
-          SET_LOCALE_TO_QUERYSTRING
-        ]
-      ) {
+      if (api.getParameters(api.getCurrentStoryData().id)[SET_KNOB]) {
         api.setQueryParams({ 'knob-locale': loc });
+        api.emit(CHANGE, { name: 'locale', value: loc });
       }
     },
     [api, dispatch, handleClose]
@@ -79,10 +77,10 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = (props) => {
   }, [dispatch, localeLocked]);
 
   useEffect(() => {
-    if (!locales || !locales.length) return;
+    if (!locales || !locales.length || state.locale) return;
     const def = locales.find((x) => x.default)?.locale as string;
     dispatch({ type: 'setDefaultLocale', defaultLocal: def });
-  }, [dispatch, locales]);
+  }, [dispatch, locales, state]);
 
   const handleLocaleList = useCallback(() => {
     const data = api.getCurrentStoryData();
