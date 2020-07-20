@@ -7,4 +7,5 @@ addParameters({
     fa: { dir: 'rtl', name: 'Persian', text: 'فارسی' },
   },
   enableLocaleLockButton: true,
+  setLocaleToQuerystring: true,
 });

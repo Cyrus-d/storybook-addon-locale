@@ -2,7 +2,11 @@ import * as React from 'react';
 import { useCallback, useEffect, useState, Dispatch } from 'react';
 import { IconButton } from '@storybook/components';
 import { API } from '@storybook/api';
-import { PARAM_LOCK_BUTTON_ENABLED, LOCALE_EVENT_SET_LOCAL } from './constants';
+import {
+  PARAM_LOCK_BUTTON_ENABLED,
+  LOCALE_EVENT_SET_LOCAL,
+  SET_LOCALE_TO_QUERYSTRING,
+} from './constants';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Language, Lock } from './icons';
@@ -26,14 +30,14 @@ interface LocaleToolProps {
   api: API;
 }
 
-export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
+export const LocaleTool: React.FunctionComponent<LocaleToolProps> = (props) => {
   const { api } = props;
 
   const [state, dispatch] = useThunkReducer(reducer, {
     api,
     locales: [],
     lockButtonEnabled: false,
-    localeDisabled: false
+    localeDisabled: false,
   });
 
   const {
@@ -41,7 +45,7 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
     locale,
     localeLocked,
     lockButtonEnabled,
-    localeDisabled
+    localeDisabled,
   } = state;
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -57,9 +61,17 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
   const handleLocaleChange = useCallback(
     (loc: string) => {
       handleClose();
+
       dispatch({ type: 'setLocale', locale: loc });
+      if (
+        api.getParameters(api.getCurrentStoryData().id)[
+          SET_LOCALE_TO_QUERYSTRING
+        ]
+      ) {
+        api.setQueryParams({ 'knob-locale': loc });
+      }
     },
-    [dispatch, handleClose]
+    [api, dispatch, handleClose]
   );
 
   const handleLocalLocking = useCallback(() => {
@@ -68,7 +80,7 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
 
   useEffect(() => {
     if (!locales || !locales.length) return;
-    const def = locales.find(x => x.default)?.locale as string;
+    const def = locales.find((x) => x.default)?.locale as string;
     dispatch({ type: 'setDefaultLocale', defaultLocal: def });
   }, [dispatch, locales]);
 
@@ -84,7 +96,7 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
 
     dispatch({
       type: 'setLockButtonEnabled',
-      enable: getParamVal(data, PARAM_LOCK_BUTTON_ENABLED)
+      enable: getParamVal(data, PARAM_LOCK_BUTTON_ENABLED),
     });
   }, [api, dispatch]);
 
@@ -134,7 +146,7 @@ export const LocaleTool: React.FunctionComponent<LocaleToolProps> = props => {
         style={{ minWidth: 500 }}
         onClose={handleClose}
       >
-        {locales.map(localData => {
+        {locales.map((localData) => {
           return (
             <MenuItem
               key={localData.locale}
