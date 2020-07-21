@@ -12,7 +12,7 @@ export default {
       en: { dir: 'ltr', name: 'English', text: 'English' },
       fa: { dir: 'rtl', name: 'Persian', text: 'فارسی' },
     },
-    setLocaleToKnob: true,
+    setLocaleKnob: true,
   },
   title: 'direction',
 };

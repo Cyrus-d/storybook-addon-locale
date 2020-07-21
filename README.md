@@ -31,6 +31,7 @@ Following options are available:
 - locales
 - defaultLocale
 - enableLocaleLockButton
+- setLocaleKnob
 
 Set addon options in your `config.js` file.
 
@@ -41,7 +42,7 @@ import { addParameters } from '@storybook/react';
 
 addParameters({
   locales: ['en', 'fr'],
-  defaultLocale: 'en'
+  defaultLocale: 'en',
 });
 ```
 
@@ -53,8 +54,8 @@ import { addParameters } from '@storybook/react';
 addParameters({
   locales: {
     en: { dir: 'ltr', name: 'English', text: 'English' },
-    fa: { dir: 'rtl', name: 'Persian', text: 'فارسی' }
-  }
+    fa: { dir: 'rtl', name: 'Persian', text: 'فارسی' },
+  },
 });
 ```
 
@@ -66,7 +67,7 @@ Or inside story file:
 export default {
   component: MyComponent,
   parameters: { locales: ['en', 'fr'] },
-  title: 'locale test'
+  title: 'locale test',
 };
 ```
 
@@ -75,8 +76,8 @@ Or for specific story:
 ```js
 MyComponentStory.story = {
   parameters: {
-    locales: ['en', 'fr']
-  }
+    locales: ['en', 'fr'],
+  },
 };
 ```
 
@@ -85,8 +86,8 @@ MyComponentStory.story = {
 ```js
 MyComponentStory.story = {
   parameters: {
-    locales: false
-  }
+    locales: false,
+  },
 };
 ```
 
@@ -99,7 +100,7 @@ import { addParameters } from '@storybook/react';
 
 addParameters({
   locales: ['en', 'fr'],
-  defaultLocale: 'en'
+  defaultLocale: 'en',
 });
 ```
 
@@ -109,20 +110,32 @@ Or inside story file:
 export default {
   component: MyComponent,
   parameters: { defaultLocale: 'en' },
-  title: 'locale test'
+  title: 'locale test',
 };
 ```
 
 ### enableLocaleLockButton
 
-To show a button in toolbar for locking selected locale for entire stories :
+To show a button in toolbar for locking selected locale for entire stories:
 
 ```js
 import { addParameters } from '@storybook/react';
 
 addParameters({
   locales: ['en', 'fr'],
-  enableLocaleLockButton: true
+  enableLocaleLockButton: true,
+});
+```
+
+### setLocaleKnob
+
+When set to true the `knob-locale` will be set:
+
+```js
+import { addParameters } from '@storybook/react';
+
+addParameters({
+  setLocaleKnob: true,
 });
 ```
 
